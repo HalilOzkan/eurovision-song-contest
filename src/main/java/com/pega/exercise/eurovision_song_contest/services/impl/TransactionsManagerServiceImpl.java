@@ -28,11 +28,9 @@ public class TransactionsManagerServiceImpl implements TransactionsManagerServic
       .doOnError(throwable -> resultHandler.handle(
         Future.succeededFuture(OperationResponse.completedWithJson(new JsonObject().put(ERROR, throwable.getLocalizedMessage())))
       ))
-      .subscribe(rows -> {
-        resultHandler.handle(
-          Future.succeededFuture(OperationResponse.completedWithJson(generateResponse(rows.iterator())))
-        );
-      });
+      .subscribe(rows -> resultHandler.handle(
+        Future.succeededFuture(OperationResponse.completedWithJson(generateResponse(rows.iterator())))
+      ));
   }
 
   @Override
@@ -41,11 +39,9 @@ public class TransactionsManagerServiceImpl implements TransactionsManagerServic
       .doOnError(throwable -> resultHandler.handle(
         Future.succeededFuture(OperationResponse.completedWithJson(new JsonObject().put(ERROR, throwable.getLocalizedMessage())))
       ))
-      .subscribe(rows -> {
-        resultHandler.handle(
-          Future.succeededFuture(OperationResponse.completedWithJson(generateResponse(rows.iterator())))
-        );
-      });
+      .subscribe(rows -> resultHandler.handle(
+        Future.succeededFuture(OperationResponse.completedWithJson(generateResponse(rows.iterator())))
+      ));
   }
 
   @Override
