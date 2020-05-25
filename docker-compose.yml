@@ -12,8 +12,6 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     command: postgres -c listen_addresses='*'
-#    networks:
-#      - backend
   app:
     container_name: app
     image: pega/exercise
@@ -33,8 +31,3 @@ services:
       - PGDATABASE=votedb
       - PGSSLMODE=DISABLE
       - HTTPSERVERPORT=8888
-#    networks:
-#      - backend
-#networks:
-#  backend:
-#    driver: bridge
