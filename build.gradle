@@ -20,7 +20,6 @@ ext {
 }
 
 application {
-//  mainClassName = 'io.vertx.core.Launcher'
   mainClassName = 'com.pega.exercise.eurovision_song_contest.Launcher'
 }
 

@@ -54,7 +54,7 @@ curl -X POST "http://localhost:8888/votes/2020" -H "accept: application/json" -H
 Get top three countries for the specified year
 
 ```bash
-curl -X GET "http://localhost:8888/votes/2020" -H "accept: application/json"```
+curl -X GET "http://localhost:8888/votes/2020" -H "accept: application/json"
 ```
 
 Get the top three favorite songs for the specified year and country
