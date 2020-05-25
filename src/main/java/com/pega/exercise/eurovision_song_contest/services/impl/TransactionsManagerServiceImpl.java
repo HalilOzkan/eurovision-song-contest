@@ -29,16 +29,8 @@ public class TransactionsManagerServiceImpl implements TransactionsManagerServic
         Future.succeededFuture(OperationResponse.completedWithJson(new JsonObject().put(ERROR, throwable.getLocalizedMessage())))
       ))
       .subscribe(rows -> {
-        JsonObject response = new JsonObject();
-        Iterator<Row> iterator = rows.iterator();
-        if (iterator.hasNext())
-          response.put("first", iterator.next().getValue(0));
-        if (iterator.hasNext())
-          response.put("second", iterator.next().getValue(0));
-        if (iterator.hasNext())
-          response.put("third", iterator.next().getValue(0));
         resultHandler.handle(
-          Future.succeededFuture(OperationResponse.completedWithJson(response))
+          Future.succeededFuture(OperationResponse.completedWithJson(generateResponse(rows.iterator())))
         );
       });
   }
@@ -50,16 +42,8 @@ public class TransactionsManagerServiceImpl implements TransactionsManagerServic
         Future.succeededFuture(OperationResponse.completedWithJson(new JsonObject().put(ERROR, throwable.getLocalizedMessage())))
       ))
       .subscribe(rows -> {
-        JsonObject response = new JsonObject();
-        Iterator<Row> iterator = rows.iterator();
-        if (iterator.hasNext())
-          response.put("first", iterator.next().getValue(0));
-        if (iterator.hasNext())
-          response.put("second", iterator.next().getValue(0));
-        if (iterator.hasNext())
-          response.put("third", iterator.next().getValue(0));
         resultHandler.handle(
-          Future.succeededFuture(OperationResponse.completedWithJson(response))
+          Future.succeededFuture(OperationResponse.completedWithJson(generateResponse(rows.iterator())))
         );
       });
   }
@@ -70,13 +54,21 @@ public class TransactionsManagerServiceImpl implements TransactionsManagerServic
       .doOnError(throwable -> resultHandler.handle(
         Future.succeededFuture(OperationResponse.completedWithJson(new JsonObject().put(ERROR, throwable.getLocalizedMessage())))
       ))
-      .subscribe(() -> {
-        resultHandler.handle(Future.succeededFuture(
-          OperationResponse.completedWithJson(
-            JsonObject.mapFrom(body)
-          )
-        ));
-      });
+      .subscribe(() -> resultHandler.handle(Future.succeededFuture(
+        OperationResponse.completedWithJson(
+          JsonObject.mapFrom(body)
+        )
+      )));
   }
 
+  private JsonObject generateResponse(Iterator<Row> iterator) {
+    JsonObject response = new JsonObject();
+    if (iterator.hasNext())
+      response.put("first", iterator.next().getValue(0));
+    if (iterator.hasNext())
+      response.put("second", iterator.next().getValue(0));
+    if (iterator.hasNext())
+      response.put("third", iterator.next().getValue(0));
+    return response;
+  }
 }

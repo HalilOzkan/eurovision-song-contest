@@ -13,7 +13,7 @@ import static java.lang.System.getenv;
 
 public class Launcher extends VertxCommandLauncher implements VertxLifecycleHooks {
 
-  private Logger LOGGER = LoggerFactory.getLogger(Launcher.class);
+  private Logger logger = LoggerFactory.getLogger(Launcher.class);
 
   public static void main(String[] args) {
 
@@ -22,6 +22,7 @@ public class Launcher extends VertxCommandLauncher implements VertxLifecycleHook
       System.setProperty("vertx.logger-delegate-factory-class-name", io.vertx.core.logging.SLF4JLogDelegateFactory.class.getCanonicalName());
     }
 
+    //TODO: sanitize command line arguments before using them, check Apache CLI CommandLineParser
     new Launcher()
       .dispatch(args);
   }
@@ -35,7 +36,7 @@ public class Launcher extends VertxCommandLauncher implements VertxLifecycleHook
   public void beforeStartingVertx(VertxOptions options) {
     // check if required parameters set in environment variables
     if (Boolean.TRUE.equals(dbParametersMissing())) {
-      LOGGER.error("Please set database paramater environment variables properly");
+      logger.error("Please set database paramater environment variables properly");
       System.exit(1);
     }
   }
