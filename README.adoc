@@ -1,4 +1,5 @@
 = Eurovision-song-contest
+:icons: font
 
 image:https://img.shields.io/badge/vert.x-3.9.1-purple.svg[link="https://vertx.io"]
 
@@ -34,6 +35,13 @@ To package your application:
 To compose and run your application:
 ```
 docker-compose up --build
+```
+
+NOTE: Docker composes and runs an application container and a database container
+
+To stop application and db containers:
+```
+docker-compose down -v
 ```
 
 == Getting Started
