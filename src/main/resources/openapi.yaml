@@ -1,0 +1,280 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:8888'
+info:
+  description: 'Eurovision song contest voting system APIs'
+  version: '1.0.0'
+  title: 'Eurovision song contest voting system'
+  termsOfService: 'http://localhost:8888/terms/'
+  contact:
+    email: 'halil.ozkan@interva.com.tr'
+    name: 'Halil Özkan'
+    url: 'https://github.com/HalilOzkan'
+  license:
+    name: 'Apache License'
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+tags:
+  - name: Vote
+    externalDocs:
+      url: 'https://localhost:8888'
+      description: 'Find out more'
+    description: 'Voting Operations'
+paths:
+  /votes/{year}:
+    get:
+      tags:
+        - Vote
+      summary: 'Get top three countries for the specified year'
+      description: 'Aggregates all votes and reports 1st, 2nd and the 3rd place for the specified year'
+      operationId: getTopThreeListByYear
+      x-vertx-event-bus: 'voting.transactions'
+      parameters:
+        - $ref: '#/components/parameters/year'
+      responses:
+        '200':
+          $ref: '#/components/responses/200-TopThree'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/422'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+        default:
+          $ref: '#/components/responses/default'
+    post:
+      tags:
+        - Vote
+      summary: 'Add a vote for the specified year'
+      description: 'Provide a vote to be inserted for the specified year'
+      operationId: addVote
+      x-vertx-event-bus: 'voting.transactions'
+      parameters:
+        - $ref: '#/components/parameters/year'
+      responses:
+        '201':
+          $ref: '#/components/responses/201'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/422'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+        default:
+          $ref: '#/components/responses/default'
+      requestBody:
+        $ref: '#/components/requestBodies/Vote'
+  /votes/{year}/{country}:
+    get:
+      tags:
+        - Vote
+      summary: 'Get the top three favorite songs for specified country'
+      description: 'Aggregates all votes and reports 1st, 2nd and the 3rd favorite songs for the specified year and country'
+      operationId: getTopThreeListByCountry
+      x-vertx-event-bus: 'voting.transactions'
+      parameters:
+        - $ref: '#/components/parameters/year'
+        - $ref: '#/components/parameters/country'
+      responses:
+        '200':
+          $ref: '#/components/responses/200-FavoriteSongs'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/422'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+        default:
+          $ref: '#/components/responses/default'
+externalDocs:
+  description: 'See example'
+  url: 'https://localhost:8080/apidocs/index.html'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - usermessage
+      properties:
+        code:
+          type: integer
+          format: int32
+        usermessage:
+          type: string
+      example:
+        code: 123
+        usermessage: 'think about it'
+    Vote:
+      type: object
+      properties:
+        countryFrom:
+          type: string
+          description: 'voter''s country'
+        votedFor:
+          type: string
+          description: 'voted country'
+      example:
+        countryFrom: 'Netherlands'
+        votedFor: 'Belgium'
+    TopThree:
+      type: object
+      properties:
+        first:
+          type: string
+          description: 'the most voted country'
+        second:
+          type: string
+          description: 'the second most voted country'
+        third:
+          type: string
+          description: 'the third most voted country'
+      example:
+        first: 'Netherlands'
+        second: 'Italy'
+        third: 'Russia'
+    FavoriteSongs:
+      type: object
+      properties:
+        first:
+          type: string
+          description: 'the most favorite'
+        second:
+          type: string
+          description: 'the second most favorite'
+        third:
+          type: string
+          description: 'the third most favorite'
+      example:
+        first: 'Italy'
+        second: 'Sweden'
+        third: 'Russia'
+  requestBodies:
+    Vote:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Vote'
+      description: 'Vote object that needs to be added'
+      required: true
+  responses:
+    '201':
+      description: 'Vote successfully added'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Vote'
+    '200-TopThree':
+      description: 'Top three successfully listed'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TopThree'
+    '200-FavoriteSongs':
+      description: 'Favorite top three songs successfully listed'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/FavoriteSongs'
+    '400':
+      description: 'Invalid Year supplied'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '401':
+      description: 'Authorization information is missing or invalid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '403':
+      description: 'Forbidden – The server understood the request, but is refusing it or the access is not allowed'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '404':
+      description: 'Not found – There is no resource behind the URI'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '405':
+      description: 'Method not allowed'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '422':
+      description: 'Unprocessable Entity – server cannot process the request'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '429':
+      description: 'Too many request(rate limiting)'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '500':
+      description: 'Internal server error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    default:
+      description: 'error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    year:
+      in: path
+      name: year
+      required: true
+      schema:
+        type: integer
+        minimum: 1956
+        maximum: 2021
+        default: 2020
+      description: 'which year'
+    country:
+      in: path
+      name: country
+      required: true
+      schema:
+        type: string
+        minLength: 5
+        maxLength: 50
+        default: 'Netherlands'
+      description: 'which country'
+  links: {}
+  callbacks: {}

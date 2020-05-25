@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  db:
+    container_name: postgres
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: postgres -c listen_addresses='*'
+#    networks:
+#      - backend
+  app:
+    container_name: app
+    image: pega/exercise
+    build: ./
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - "8888:8888"
+    environment:
+      - PGHOST=db
+      - PGPORT=5432
+      - PGUSER=pegauser
+      - PGPASSWORD=pegapass
+      - PGSCHEMA=pega
+      - PGDATABASE=votedb
+      - PGSSLMODE=DISABLE
+      - HTTPSERVERPORT=8888
+#    networks:
+#      - backend
+#networks:
+#  backend:
+#    driver: bridge
