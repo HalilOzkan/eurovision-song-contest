@@ -2,24 +2,58 @@
 
 image:https://img.shields.io/badge/vert.x-3.9.1-purple.svg[link="https://vertx.io"]
 
-This application was generated using http://start.vertx.io
+This exercise application implements a small system to count the results of the Eurovision Song Contest.
+
+* An OpenAPI specification designed to provide Api Design First approach.
+* Vert.x Web API Contract used to expose endpoint paths and validate them with OpenAPI spec.
+* An HTTP Server expose an endpoint with relevant paths alligned with OpenAPI spec and controlled by Web API Contract.
+* Endpoint paths connected to HTTP Server router built with OpenAPI directly to EventBus services.
+* An EventBus allowed many parts of application to communicate each other.
+* Reactive pattern implemented to develop transaction services, mainly RxJava2, asychronous and Java streams.
+* Reactive and non blocking PostgreSQL client used to handle database connections, queries and transactions.
+* Application dockerized from adoptopenjdk/openjdk8-openj9:alpine-jre image.
+* A PostgreSQL database  preffered to store application data through reactive database driver. During installation all required database, schema, table and indexes are created.
+* Application and database docker containers composed and run with Docker Compose.
+
+== Prerequisites
+
+* Gradle
+* JDK 8+
+* Docker Engine
+* Docker Compose
 
 == Building
 
-To launch your tests:
-```
-./gradlew clean test
-```
-
 To package your application:
 ```
-./gradlew clean assemble
+./gradlew clean build -x test
 ```
 
-To run your application:
+== Run
+
+To compose and run your application:
 ```
-./gradlew clean run
+docker-compose up --build
 ```
+
+== Getting Started
+Post a vote with `curl`:
+
+```bash
+curl -X POST "http://localhost:8888/votes/2020" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"countryFrom\":\"Netherlands\",\"votedFor\":\"Belgium\"}"
+```
+
+Get top three countries for the specified year
+
+```bash
+curl -X GET "http://localhost:8888/votes/2020" -H "accept: application/json"```
+```
+
+Get the top three favorite songs for specified country
+```bash
+curl -X GET "http://localhost:8888/votes/2020/Netherlands" -H "accept: application/json"
+```
+
 
 == Help
 
