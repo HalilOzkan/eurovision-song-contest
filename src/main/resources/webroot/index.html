@@ -11,7 +11,8 @@
   <table id="resulttable" border="1">
   </table>
 </div>
-
+<br>
+<div id="updatetime" align="center"></div>
 
 <script>
 
@@ -32,6 +33,7 @@
         trHTML += '<tr><td>' + jData[i].year + '</td><td>' + jData[i].country + '</td><td align="center">' + jData[i].count + '</td></tr>';
       }
       document.getElementById('resulttable').innerHTML = trHTML;
+      document.getElementById('updatetime').innerHTML = 'Last update: ' + new Date();
 
     });
 

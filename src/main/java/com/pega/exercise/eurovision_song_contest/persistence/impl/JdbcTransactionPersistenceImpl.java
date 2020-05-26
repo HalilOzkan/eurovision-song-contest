@@ -63,8 +63,8 @@ public class JdbcTransactionPersistenceImpl extends JdbcRepositoryImpl implement
     TBL_SCHEMA + ".votes (countryfrom, votedfor, year)\n" +
     "VALUES (initcap($1), initcap($2), $3)";
 
-  public static final String GET_METRICS = "select year, countryfrom, count(countryfrom)\n" +
+  public static final String GET_METRICS = "select year, votedfor, count(votedfor)\n" +
     "from " + TBL_SCHEMA + ".votes\n" +
-    "group by year, countryfrom\n" +
-    "order by year desc, count(countryfrom) desc";
+    "group by year, votedfor\n" +
+    "order by year desc, count(votedfor) desc";
 }
