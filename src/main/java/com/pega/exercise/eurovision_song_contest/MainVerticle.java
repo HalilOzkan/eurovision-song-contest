@@ -56,7 +56,7 @@ public class MainVerticle extends AbstractVerticle {
     // Create an instance of TransactionManagerService and mount to event bus
     TransactionsManagerService transactionsManagerService = TransactionsManagerService.create(persistence);
     consumer = serviceBinder
-      .setAddress(Constants.EVENTBUSADDR)
+      .setAddress(Constants.EVENTBUSADDR_TRX)
       .register(TransactionsManagerService.class, transactionsManagerService);
     future.complete(consumer.address());
     return future;
@@ -98,9 +98,23 @@ public class MainVerticle extends AbstractVerticle {
     return future;
   }
 
+  private CompletableFuture<Long> startMetricCollector() {
+    LOGGER.info("HTTP server starting");
+
+    CompletableFuture<Long> future = new CompletableFuture<>();
+
+    long timerID = vertx.setPeriodic(Constants.METRIC_REPORT_PERIOD, id -> {
+      Vertx.vertx().eventBus().send(Constants.EVENTBUSADDR_METRICS, "metrics message");
+    });
+
+    future.complete(timerID);
+    return future;
+  }
+
   /**
    * When this verticle receive start signal with a promise
    * First starts transaction service and then http server
+   *
    * @param startPromise completed if verticle starts successfully, otherwise returns failed
    */
   @Override
@@ -110,6 +124,7 @@ public class MainVerticle extends AbstractVerticle {
       .whenComplete((s, throwable) -> {
         if (throwable == null) {
           LOGGER.info("Application started successfully");
+          vertx.deployVerticle(new MetricsReporterVerticle());
           startPromise.complete();
         } else {
           LOGGER.error("Application can't start \n{}", throwable.getLocalizedMessage());
@@ -128,6 +143,7 @@ public class MainVerticle extends AbstractVerticle {
   public static void main(String[] args) {
     Vertx vertx = Vertx.vertx();
     vertx.deployVerticle(new MainVerticle());
+    vertx.deployVerticle(new MetricsReporterVerticle());
   }
 
 }

@@ -9,7 +9,10 @@ public final class Constants {
 
   public static final String HTTPSERVER = "0.0.0.0";
   public static final String HTTPSERVERPORT = "HTTPSERVERPORT";
+  public static final String METRICSSERVERPORT = "METRICSSERVERPORT";
 
-  public static final String EVENTBUSADDR = "voting.transactions";
+  public static final String EVENTBUSADDR_TRX = "voting.transactions";
+  public static final String EVENTBUSADDR_METRICS = "voting.metrics";
+  public static final Long METRIC_REPORT_PERIOD = 5000L;
 
 }

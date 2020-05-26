@@ -17,4 +17,6 @@ public interface TransactionPersistence {
 
   Completable addVote(Integer year, Vote vote);
 
+  Single<RowSet<Row>> getMetrics();
+
 }

@@ -32,6 +32,10 @@ public class JdbcRepositoryImpl implements JdbcRepository {
     LOGGER.info("Database connection pool created");
   }
 
+  public Single<RowSet<Row>> query(String sql) {
+    return client.preparedQuery(sql).rxExecute();
+  }
+
   public Single<RowSet<Row>> queryWithParams(Tuple sqlParams, String sql) {
     return client.preparedQuery(sql).rxExecute(sqlParams);
   }

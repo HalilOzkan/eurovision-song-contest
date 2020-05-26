@@ -1,0 +1,43 @@
+<html lang="en">
+<head>
+  <title>Eurovision Song Contest Dashboard</title>
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+  <script src="vertx-eventbus.js"></script>
+</head>
+<body>
+<br>
+<div id="result" align="center">
+  <table id="resulttable" border="1">
+  </table>
+</div>
+
+
+<script>
+
+  var eb = new EventBus('http://localhost:9999/eventbus', {"vertxbus_ping_interval": 1000});
+  eb.enableReconnect(true);
+
+  eb.onopen = function () {
+
+    // set a handler to receive a message
+    eb.registerHandler('voting.metrics', function (error, message) {
+
+      var jData = message.body;
+
+      var trHTML = '';
+      trHTML = '<tr><th>Year</th><th>Country</th><th>Vote Count</th></tr>';
+      for (var i = 0; i < jData.length; i++) {
+        var jDataYear = jData[i].year;
+        trHTML += '<tr><td>' + jData[i].year + '</td><td>' + jData[i].country + '</td><td align="center">' + jData[i].count + '</td></tr>';
+      }
+      document.getElementById('resulttable').innerHTML = trHTML;
+
+    });
+
+  }
+
+</script>
+
+</body>
+</html>

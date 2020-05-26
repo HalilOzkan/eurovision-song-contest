@@ -34,6 +34,10 @@ public class JdbcTransactionPersistenceImpl extends JdbcRepositoryImpl implement
     return this.execute(Tuple.of(vote.getCountryFrom(), vote.getVotedFor(), year), INSERT_STATEMENT);
   }
 
+  public Single<RowSet<Row>> getMetrics() {
+    return this.query(GET_METRICS);
+  }
+
   //SQL statements
 
   public static final String TBL_SCHEMA = getenv("PGDATABASE")
@@ -59,4 +63,8 @@ public class JdbcTransactionPersistenceImpl extends JdbcRepositoryImpl implement
     TBL_SCHEMA + ".votes (countryfrom, votedfor, year)\n" +
     "VALUES (initcap($1), initcap($2), $3)";
 
+  public static final String GET_METRICS = "select year, countryfrom, count(countryfrom)\n" +
+    "from " + TBL_SCHEMA + ".votes\n" +
+    "group by year, countryfrom\n" +
+    "order by year desc, count(countryfrom) desc";
 }

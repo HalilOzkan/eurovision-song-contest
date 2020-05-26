@@ -22,6 +22,7 @@ services:
       - db
     ports:
       - "8888:8888"
+      - "9999:9999"
     environment:
       - PGHOST=db
       - PGPORT=5432
@@ -31,3 +32,4 @@ services:
       - PGDATABASE=votedb
       - PGSSLMODE=DISABLE
       - HTTPSERVERPORT=8888
+      - METRICSSERVERPORT=9999

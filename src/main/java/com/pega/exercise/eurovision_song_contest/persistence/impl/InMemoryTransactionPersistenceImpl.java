@@ -62,6 +62,11 @@ public class InMemoryTransactionPersistenceImpl implements InMemoryTransactionPe
     return null;
   }
 
+  @Override
+  public Single<RowSet<Row>> getMetrics() {
+    return null;
+  }
+
   /*
   @Override
   public List<String> getTopThreeListByCountry(Integer year, String country) {
