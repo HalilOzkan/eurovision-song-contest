@@ -7,7 +7,7 @@ import io.vertx.reactivex.sqlclient.Row;
 import io.vertx.reactivex.sqlclient.RowSet;
 
 /**
- * Base Interface for persisting vote transactions
+ * Base Interface to persist and query vote transactions
  */
 public interface TransactionPersistence {
 
@@ -16,5 +16,7 @@ public interface TransactionPersistence {
   Single<RowSet<Row>> getTopThreeListByCountry(Integer year, String country);
 
   Completable addVote(Integer year, Vote vote);
+
+  Single<RowSet<Row>> getMetrics();
 
 }

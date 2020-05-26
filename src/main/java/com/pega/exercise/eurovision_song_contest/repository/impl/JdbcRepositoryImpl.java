@@ -22,23 +22,6 @@ public class JdbcRepositoryImpl implements JdbcRepository {
   protected final Pool client;
 
   public JdbcRepositoryImpl(Vertx vertx) {
-/*
-    // set Postgres connection options
-    PgConnectOptions connectOptions = new PgConnectOptions()
-      .setPort(Integer.parseInt(getenv("PGPORT")))
-      .setHost(getenv("PGHOST"))
-      .setDatabase(getenv("PGDATABASE"))
-      .setUser(getenv("PGUSER"))
-      .setPassword(getenv("PGPASSWORD"));
-
-    // set Postgres connection pool options
-    PoolOptions poolOptions = new PoolOptions()
-      .setMaxSize(Constants.Db.APP_DB_CONN_POOL_SIZE);
-
-    // Create the connection pool client
-    this.client = PgPool.pool(vertx, connectOptions, poolOptions);
-*/
-
 
     // set Postgres connection pool options
     PoolOptions poolOptions = new PoolOptions()
@@ -46,16 +29,11 @@ public class JdbcRepositoryImpl implements JdbcRepository {
 
     this.client = PgPool.pool(vertx, poolOptions);
 
-    /*
-    String connectionUri = "postgresql://pegauser:pegapass@db:5432/votedb";
-
-    // set Postgres connection pool options
-    PoolOptions poolOptions = new PoolOptions()
-      .setMaxSize(Constants.Db.APP_DB_CONN_POOL_SIZE);
-
-    this.client = PgPool.pool(vertx, connectionUri, poolOptions);
-*/
     LOGGER.info("Database connection pool created");
+  }
+
+  public Single<RowSet<Row>> query(String sql) {
+    return client.preparedQuery(sql).rxExecute();
   }
 
   public Single<RowSet<Row>> queryWithParams(Tuple sqlParams, String sql) {

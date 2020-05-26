@@ -21,6 +21,18 @@ import java.util.concurrent.CompletableFuture;
 
 import static java.lang.System.getenv;
 
+/**
+ * This is the single and only verticle<br><br>
+ * Verticles are chunks of code that get deployed and run by Vert.x.
+ * A Vert.x instance maintains N event loop threads (where N by default is core*2) by default.
+ * Verticles can be written in any of the languages that Vert.x supports and
+ * a single application can include verticles written in multiple languages.<br><br>
+ * This verticle starts transaction manager service using JDBC transaction persistence and then
+ * binds this transaction manager service to event bus at a specific address.
+ * Next, it constructs the router factory using openapi.yaml and mounts handler to validate message.<br><br>
+ * Whenever a Json message receives via http server, the Web API Contract Router Factory validates it and
+ * the mounted service on eventbus processes the message and transaction
+ */
 public class MainVerticle extends AbstractVerticle {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
@@ -44,7 +56,7 @@ public class MainVerticle extends AbstractVerticle {
     // Create an instance of TransactionManagerService and mount to event bus
     TransactionsManagerService transactionsManagerService = TransactionsManagerService.create(persistence);
     consumer = serviceBinder
-      .setAddress(Constants.EVENTBUSADDR)
+      .setAddress(Constants.EVENTBUSADDR_TRX)
       .register(TransactionsManagerService.class, transactionsManagerService);
     future.complete(consumer.address());
     return future;
@@ -86,6 +98,25 @@ public class MainVerticle extends AbstractVerticle {
     return future;
   }
 
+  private CompletableFuture<Long> startMetricCollector() {
+    LOGGER.info("HTTP server starting");
+
+    CompletableFuture<Long> future = new CompletableFuture<>();
+
+    long timerID = vertx.setPeriodic(Constants.METRIC_REPORT_PERIOD, id -> {
+      Vertx.vertx().eventBus().send(Constants.EVENTBUSADDR_METRICS, "metrics message");
+    });
+
+    future.complete(timerID);
+    return future;
+  }
+
+  /**
+   * When this verticle receive start signal with a promise
+   * First starts transaction service and then http server
+   *
+   * @param startPromise completed if verticle starts successfully, otherwise returns failed
+   */
   @Override
   public void start(Promise<Void> startPromise) {
     startTransactionService()
@@ -93,6 +124,7 @@ public class MainVerticle extends AbstractVerticle {
       .whenComplete((s, throwable) -> {
         if (throwable == null) {
           LOGGER.info("Application started successfully");
+          vertx.deployVerticle(new MetricsReporterVerticle());
           startPromise.complete();
         } else {
           LOGGER.error("Application can't start \n{}", throwable.getLocalizedMessage());
@@ -111,6 +143,7 @@ public class MainVerticle extends AbstractVerticle {
   public static void main(String[] args) {
     Vertx vertx = Vertx.vertx();
     vertx.deployVerticle(new MainVerticle());
+    vertx.deployVerticle(new MetricsReporterVerticle());
   }
 
 }
